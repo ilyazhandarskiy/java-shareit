@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,17 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDto {
-    private Long id;
-
-    @NotBlank
+public class PatchItemRequest {
+    @Pattern(regexp = "(?s).*\\S.*", message = "Наименование не может быть пустым")
     private String name;
 
-    @NotBlank
+    @Pattern(regexp = "(?s).*\\S.*", message = "Описание не может быть пустым")
     private String description;
 
-    @NotBlank
     private Boolean available;
-
-    private Long requestId;
 }
