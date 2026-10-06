@@ -25,9 +25,9 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto patchItem(@RequestHeader(USER_ID_HEADER) Long userId, 
-                         @Valid @RequestBody PatchItemRequest patchItemRequest,
-                         @PathVariable Long itemId) {
+    public ItemDto patchItem(@RequestHeader(USER_ID_HEADER) Long userId,
+                             @Valid @RequestBody PatchItemRequest patchItemRequest,
+                             @PathVariable Long itemId) {
         return itemService.patch(userId, itemId, patchItemRequest);
     }
 
