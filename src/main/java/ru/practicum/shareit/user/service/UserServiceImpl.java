@@ -30,8 +30,10 @@ public class UserServiceImpl implements UserService {
     public UserDto patch(long userId, PatchUserRequest patchUserRequest) {
         User user = getUserOrThrow(userId);
 
-        if (!user.getEmail().equalsIgnoreCase(patchUserRequest.getEmail())) {
-            checkEmailUnique(patchUserRequest.getEmail());
+        if (patchUserRequest.getEmail() != null) {
+            if (!user.getEmail().equalsIgnoreCase(patchUserRequest.getEmail())) {
+                checkEmailUnique(patchUserRequest.getEmail());
+            }
         }
 
         UserMapper.patchUser(user, patchUserRequest);
