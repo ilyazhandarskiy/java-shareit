@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.CreateUserRequest;
@@ -15,10 +17,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public UserDto create(CreateUserRequest createUserRequest) {
         checkEmailUnique(createUserRequest.getEmail());
@@ -26,6 +30,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserDto(userRepository.save(createdUser));
     }
 
+    @Transactional
     @Override
     public UserDto patch(long userId, PatchUserRequest patchUserRequest) {
         User user = getUserOrThrow(userId);
