@@ -31,7 +31,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflictException(AuthorizationException e, HttpServletRequest request) {
+    public ErrorResponse handleConflictException(ConflictException e, HttpServletRequest request) {
         return buildResponse(HttpStatus.CONFLICT, e, request);
     }
 

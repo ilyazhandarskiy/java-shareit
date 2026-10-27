@@ -46,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (item.getOwner().getId().equals(userId)) {
-            throw new BookingUnavailableException("Владелец не может забронировать свою вещь");
+            throw new NotFoundException("Владелец не может забронировать свою вещь");
         }
 
         checkBookingOverlap(item.getId(), createBookingRequest.getStart(), createBookingRequest.getEnd());
