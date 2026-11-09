@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -28,5 +31,10 @@ public class ItemRequest {
     private User requestor;
 
     @Column(name = "created", nullable = false)
-    private LocalDate created;
+    private LocalDateTime created;
+
+    @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
+    @OrderBy("id ASC")
+    @Builder.Default
+    private List<Item> items = new ArrayList<>();
 }

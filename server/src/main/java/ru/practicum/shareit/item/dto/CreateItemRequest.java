@@ -21,4 +21,6 @@ public class CreateItemRequest {
 
     @NotNull(message = "Статус доступности не может быть пустым")
     private Boolean available;
+
+    private Long requestId;
 }
