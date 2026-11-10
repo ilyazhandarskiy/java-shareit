@@ -100,7 +100,7 @@ public class ItemServiceImpl implements ItemService {
         User author = getUserOrThrow(userId);
         Item item = getItemOrThrow(itemId);
 
-        boolean isRented = bookingRepository.existsByBookerIdAndItemIdAndStatusAndEndBefore(
+        boolean isRented = bookingRepository.existsByBookerIdAndItemIdAndStatusAndEndIsBefore(
                 userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
         if (!isRented) {
             throw new IllegalArgumentException("Отзыв можно оставить только после завершённой аренды");

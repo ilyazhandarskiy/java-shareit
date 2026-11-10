@@ -9,19 +9,23 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
+      - TZ=${TZ:-Europe/Moscow}
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=${TZ:-Europe/Moscow}
 
   server:
     build: server
     image: shareit-server
     container_name: shareit-server
     ports:
-      - "9090:9090"
+      - "8080:9090"
     depends_on:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=shareit
       - SPRING_DATASOURCE_PASSWORD=shareit
+      - TZ=${TZ:-Europe/Moscow}
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=${TZ:-Europe/Moscow}
 
   db:
     image: postgres:16.1
