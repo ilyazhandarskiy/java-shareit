@@ -1,9 +1,9 @@
 package ru.practicum.shareit.item.mapper;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.shareit.item.dto.CreateItemRequest;
+import ru.practicum.shareit.item.dto.CreateItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.PatchItemRequest;
+import ru.practicum.shareit.item.dto.PatchItemRequestDto;
 import ru.practicum.shareit.item.model.Item;
 
 @UtilityClass
@@ -27,29 +27,29 @@ public class ItemMapper {
                 .build();
     }
 
-    public Item toItem(CreateItemRequest createItemRequest) {
-        if (createItemRequest == null) {
+    public Item toItem(CreateItemRequestDto createItemRequestDto) {
+        if (createItemRequestDto == null) {
             return null;
         }
         return Item.builder()
-                .name(createItemRequest.getName())
-                .description(createItemRequest.getDescription())
-                .available(createItemRequest.getAvailable())
+                .name(createItemRequestDto.getName())
+                .description(createItemRequestDto.getDescription())
+                .available(createItemRequestDto.getAvailable())
                 .build();
     }
 
-    public void patchItem(Item item, PatchItemRequest patchItemRequest) {
-        if (item == null || patchItemRequest == null) {
+    public void patchItem(Item item, PatchItemRequestDto patchItemRequestDto) {
+        if (item == null || patchItemRequestDto == null) {
             return;
         }
-        if (patchItemRequest.getName() != null) {
-            item.setName(patchItemRequest.getName());
+        if (patchItemRequestDto.getName() != null) {
+            item.setName(patchItemRequestDto.getName());
         }
-        if (patchItemRequest.getDescription() != null) {
-            item.setDescription(patchItemRequest.getDescription());
+        if (patchItemRequestDto.getDescription() != null) {
+            item.setDescription(patchItemRequestDto.getDescription());
         }
-        if (patchItemRequest.getAvailable() != null) {
-            item.setAvailable(patchItemRequest.getAvailable());
+        if (patchItemRequestDto.getAvailable() != null) {
+            item.setAvailable(patchItemRequestDto.getAvailable());
         }
     }
 }

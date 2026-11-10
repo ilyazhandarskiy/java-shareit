@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatchItemRequest {
+public class PatchItemRequestDto {
     @Pattern(regexp = "(?s).*\\S.*", message = "Наименование не может быть пустым")
     private String name;
 

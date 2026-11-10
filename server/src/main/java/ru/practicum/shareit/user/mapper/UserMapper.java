@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.mapper;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.shareit.user.dto.CreateUserRequest;
-import ru.practicum.shareit.user.dto.PatchUserRequest;
+import ru.practicum.shareit.user.dto.CreateUserRequestDto;
+import ru.practicum.shareit.user.dto.PatchUserRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -20,7 +20,7 @@ public class UserMapper {
                 .build();
     }
 
-    public User toUser(CreateUserRequest request) {
+    public User toUser(CreateUserRequestDto request) {
         if (request == null) {
             return null;
         }
@@ -30,7 +30,7 @@ public class UserMapper {
                 .build();
     }
 
-    public void patchUser(User user, PatchUserRequest request) {
+    public void patchUser(User user, PatchUserRequestDto request) {
         if (user == null || request == null) {
             return;
         }

@@ -18,15 +18,15 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestHeader(USER_ID_HEADER) Long userId,
-                              @Valid @RequestBody CreateItemRequest createItemRequest) {
-        return itemService.create(userId, createItemRequest);
+                              @Valid @RequestBody CreateItemRequestDto createItemRequestDto) {
+        return itemService.create(userId, createItemRequestDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto patchItem(@RequestHeader(USER_ID_HEADER) Long userId,
-                             @Valid @RequestBody PatchItemRequest patchItemRequest,
+                             @Valid @RequestBody PatchItemRequestDto patchItemRequestDto,
                              @PathVariable Long itemId) {
-        return itemService.patch(userId, itemId, patchItemRequest);
+        return itemService.patch(userId, itemId, patchItemRequestDto);
     }
 
     @GetMapping("/{itemId}")

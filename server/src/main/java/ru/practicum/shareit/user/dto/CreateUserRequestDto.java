@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchUserRequest {
+public class CreateUserRequestDto {
 
-    @Pattern(regexp = "(?s).*\\S.*", message = "Имя не должно быть пустым")
+    @NotBlank(message = "Имя пользователя не указано или пусто")
     private String name;
 
-    @Pattern(regexp = "(?s).*\\S.*", message = "Почта не должна быть пустой")
+    @NotBlank(message = "Электронная почта не указана или пуста")
     @Email(message = "Электронная почта указана некорректно")
     private String email;
 }
+

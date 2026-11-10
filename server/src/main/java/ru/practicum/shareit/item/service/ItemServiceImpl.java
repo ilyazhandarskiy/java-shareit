@@ -38,14 +38,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto create(long userId, CreateItemRequest createItemRequest) {
+    public ItemDto create(long userId, CreateItemRequestDto createItemRequestDto) {
         User user = getUserOrThrow(userId);
-        Item item = ItemMapper.toItem(createItemRequest);
+        Item item = ItemMapper.toItem(createItemRequestDto);
         item.setOwner(user);
 
-        if (createItemRequest.getRequestId() != null) {
-            ItemRequest request = itemRequestRepository.findById(createItemRequest.getRequestId())
-                    .orElseThrow(() -> new NotFoundException("Запрос не найден: " + createItemRequest.getRequestId()));
+        if (createItemRequestDto.getRequestId() != null) {
+            ItemRequest request = itemRequestRepository.findById(createItemRequestDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос не найден: " + createItemRequestDto.getRequestId()));
              item.setRequest(request);
         }
 
@@ -54,13 +54,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto patch(long userId, long itemId, PatchItemRequest patchItemRequest) {
+    public ItemDto patch(long userId, long itemId, PatchItemRequestDto patchItemRequestDto) {
         Item item = getItemOrThrow(itemId);
         if (item.getOwner().getId() != userId) {
             throw new NotFoundException("Пользователь c id: %d не имеет прав для изменения Item с id: %d"
                     .formatted(userId, itemId));
         }
-        ItemMapper.patchItem(item, patchItemRequest);
+        ItemMapper.patchItem(item, patchItemRequestDto);
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dto.CreateUserRequest;
-import ru.practicum.shareit.user.dto.PatchUserRequest;
+import ru.practicum.shareit.user.dto.CreateUserRequestDto;
+import ru.practicum.shareit.user.dto.PatchUserRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -24,24 +24,24 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto create(CreateUserRequest createUserRequest) {
-        checkEmailUnique(createUserRequest.getEmail());
-        User createdUser = UserMapper.toUser(createUserRequest);
+    public UserDto create(CreateUserRequestDto createUserRequestDto) {
+        checkEmailUnique(createUserRequestDto.getEmail());
+        User createdUser = UserMapper.toUser(createUserRequestDto);
         return UserMapper.toUserDto(userRepository.save(createdUser));
     }
 
     @Transactional
     @Override
-    public UserDto patch(long userId, PatchUserRequest patchUserRequest) {
+    public UserDto patch(long userId, PatchUserRequestDto patchUserRequestDto) {
         User user = getUserOrThrow(userId);
 
-        if (patchUserRequest.getEmail() != null) {
-            if (!user.getEmail().equalsIgnoreCase(patchUserRequest.getEmail())) {
-                checkEmailUnique(patchUserRequest.getEmail());
+        if (patchUserRequestDto.getEmail() != null) {
+            if (!user.getEmail().equalsIgnoreCase(patchUserRequestDto.getEmail())) {
+                checkEmailUnique(patchUserRequestDto.getEmail());
             }
         }
 
-        UserMapper.patchUser(user, patchUserRequest);
+        UserMapper.patchUser(user, patchUserRequestDto);
 
         return UserMapper.toUserDto(userRepository.save(user));
     }

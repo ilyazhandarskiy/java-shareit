@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.CreateBookingRequest;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
@@ -35,10 +35,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDto create(long userId, CreateBookingRequest createBookingRequest) {
-        validateEndAfterStart(createBookingRequest.getStart(), createBookingRequest.getEnd());
+    public BookingDto create(long userId, BookingRequestDto bookingRequestDto) {
+        validateEndAfterStart(bookingRequestDto.getStart(), bookingRequestDto.getEnd());
 
-        Item item = getItemOrThrow(createBookingRequest.getItemId());
+        Item item = getItemOrThrow(bookingRequestDto.getItemId());
         User booker = getUserOrThrow(userId);
 
         if (!Boolean.TRUE.equals(item.getAvailable())) {
@@ -49,9 +49,9 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("Владелец не может забронировать свою вещь");
         }
 
-        checkBookingOverlap(item.getId(), createBookingRequest.getStart(), createBookingRequest.getEnd());
+        checkBookingOverlap(item.getId(), bookingRequestDto.getStart(), bookingRequestDto.getEnd());
 
-        Booking booking = bookingRepository.save(BookingMapper.toBooking(createBookingRequest, item, booker, BookingStatus.WAITING));
+        Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingRequestDto, item, booker, BookingStatus.WAITING));
 
         return BookingMapper.toBookingDto(booking);
     }

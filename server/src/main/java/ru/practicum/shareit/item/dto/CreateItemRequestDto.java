@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateItemRequest {
+public class CreateItemRequestDto {
 
     @NotBlank(message = "Наименование не может быть пустым")
     private String name;

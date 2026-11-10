@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserRequest {
+public class CreateUserRequestDto {
+    private Long id;
 
-    @NotBlank(message = "Имя пользователя не указано или пусто")
+    @NotBlank
     private String name;
 
-    @NotBlank(message = "Электронная почта не указана или пуста")
-    @Email(message = "Электронная почта указана некорректно")
+    @NotBlank
+    @Email
     private String email;
 }
-
