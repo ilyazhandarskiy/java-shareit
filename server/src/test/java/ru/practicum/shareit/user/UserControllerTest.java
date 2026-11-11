@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -89,15 +89,13 @@ class UserControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void get() {
-        long userId = 0L;
+    void getByIdWhenUserExists() throws Exception {
+        when(userService.getById(2L)).thenReturn(UserDto.builder().id(2L).name("Booker").email("b@example.com").build());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/{userId}", userId))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        verify(userService).getById(userId);
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/2")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2)).andExpect(jsonPath("$.name").value("Booker"))
+                .andExpect(jsonPath("$.email").value("b@example.com"));
+        verify(userService).getById(2L);
     }
 
     @Test

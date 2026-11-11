@@ -1,6 +1,9 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -18,9 +21,11 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -130,7 +135,7 @@ class UserServiceImplTest {
 
         List<UserDto> actual = userService.getAll();
 
-        assertEquals(List.of(UserMapper.toUserDto(users.get(0))), actual);
+        assertEquals(List.of(UserMapper.toUserDto(users.getFirst())), actual);
     }
 
     @Test
@@ -149,5 +154,42 @@ class UserServiceImplTest {
         assertThrows(NotFoundException.class, () -> userService.deleteById(1L));
 
         verify(userRepository, never()).deleteById(anyLong());
+    }
+
+    @ParameterizedTest
+    @MethodSource("patches")
+    void partialUpdatesPreserveOmittedFieldsAndAllowOwnEmail(PatchUserRequestDto patch, String name, String email) {
+        User existing = User.builder().id(1L).name("Original").email("user@example.com").build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
+        if (patch.getEmail() != null && !patch.getEmail().equalsIgnoreCase(existing.getEmail())) {
+            when(userRepository.findByEmail(patch.getEmail())).thenReturn(Optional.empty());
+        }
+        when(userRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserDto actual = userService.patch(1, patch);
+
+        assertEquals(1L, actual.getId());
+        assertEquals(name, actual.getName());
+        assertEquals(email, actual.getEmail());
+        verify(userRepository).save(existing);
+        if (email.equalsIgnoreCase("user@example.com")) {
+            verify(userRepository, never()).findByEmail(anyString());
+        } else {
+            verify(userRepository).findByEmail(email);
+        }
+    }
+
+    @Test
+    void emptyUserListIsEmpty() {
+        assertTrue(userService.getAll().isEmpty());
+    }
+
+    private static Stream<Arguments> patches() {
+        return Stream.of(
+                Arguments.of(new PatchUserRequestDto(), "Original", "user@example.com"),
+                Arguments.of(PatchUserRequestDto.builder().name("Updated").build(), "Updated", "user@example.com"),
+                Arguments.of(PatchUserRequestDto.builder().email("new@example.com").build(), "Original", "new@example.com"),
+                Arguments.of(PatchUserRequestDto.builder().email("user@example.com").build(), "Original", "user@example.com"),
+                Arguments.of(PatchUserRequestDto.builder().email("USER@example.com").build(), "Original", "USER@example.com"));
     }
 }
