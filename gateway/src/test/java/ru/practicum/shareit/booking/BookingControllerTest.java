@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 
@@ -15,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -66,7 +69,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void invalidBookingDoesNotCallClient() throws Exception {
+    void createWhenEndBeforeStartDoesNotCallClient() throws Exception {
         String start = LocalDateTime.now().plusDays(2).format(FORMATTER);
         String end = LocalDateTime.now().plusDays(1).format(FORMATTER);
         mockMvc.perform(post("/bookings")
@@ -75,28 +78,59 @@ class BookingControllerTest {
                         .content("{\"itemId\":4,\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    void getWhenStateUnknownDoesNotCallClient() throws Exception {
         mockMvc.perform(get("/bookings").header(USER_HEADER, 1).param("state", "unknown"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").exists());
+                .andExpect(jsonPath("$.error").value("Unknown state: unknown"));
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    void getWhenFromNegativeDoesNotCallClient() throws Exception {
         mockMvc.perform(get("/bookings").header(USER_HEADER, 1).param("from", "-1"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    void createWithoutUserHeaderDoesNotCallClient() throws Exception {
+        String start = LocalDateTime.now().plusDays(1).format(FORMATTER);
+        String end = LocalDateTime.now().plusDays(2).format(FORMATTER);
+
         mockMvc.perform(post("/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"itemId\":4,\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"))
                 .andExpect(status().isBadRequest());
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    void createWithoutBodyDoesNotCallClient() throws Exception {
         mockMvc.perform(post("/bookings")
                         .header(USER_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
+        verifyNoInteractions(bookingClient);
+    }
+
+    @Test
+    void createWithoutStartDoesNotCallClient() throws Exception {
+        String end = LocalDateTime.now().plusDays(2).format(FORMATTER);
+
         mockMvc.perform(post("/bookings")
                         .header(USER_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"itemId\":4,\"end\":\"" + end + "\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").exists());
+                .andExpect(result -> assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.error", containsString("start")));
         verifyNoInteractions(bookingClient);
     }
 }
