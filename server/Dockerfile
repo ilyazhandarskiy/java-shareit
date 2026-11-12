@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-jammy
+FROM amazoncorretto:21-al2023-headless
 VOLUME /tmp
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar

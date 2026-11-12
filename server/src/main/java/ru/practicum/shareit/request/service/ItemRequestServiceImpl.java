@@ -55,7 +55,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestDtoFull findById(Long id, Long userId) {
         getUserOrThrow(userId);
-        return ItemRequestMapper.toItemRequestDtoFull(itemRequestRepository.findById(id).orElseThrow(() -> new NotFoundException("Запрос пользователя не найден:" + id)));
+        return ItemRequestMapper.toItemRequestDtoFull(itemRequestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Запрос пользователя не найден:" + id)));
     }
 
 
