@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -68,16 +70,19 @@ class BookingControllerTest {
         verify(bookingClient).getOwnerBookings(1L, BookingState.ALL, 0, 10);
     }
 
-    @Test
-    void createWhenEndBeforeStartDoesNotCallClient() throws Exception {
-        String start = LocalDateTime.now().plusDays(2).format(FORMATTER);
-        String end = LocalDateTime.now().plusDays(1).format(FORMATTER);
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0})
+    void createWhenEndNotAfterStartDoesNotCallClient(int endOffsetDays) throws Exception {
+        LocalDateTime startDate = LocalDateTime.now().plusDays(2).withNano(0);
+        String start = startDate.format(FORMATTER);
+        String end = startDate.plusDays(endOffsetDays).format(FORMATTER);
         mockMvc.perform(post("/bookings")
                         .header(USER_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"itemId\":4,\"start\":\"" + start + "\",\"end\":\"" + end + "\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").exists());
+                .andExpect(result -> assertInstanceOf(IllegalArgumentException.class, result.getResolvedException()))
+                .andExpect(jsonPath("$.error").value("Дата окончания должна быть позже даты начала"));
         verifyNoInteractions(bookingClient);
     }
 
